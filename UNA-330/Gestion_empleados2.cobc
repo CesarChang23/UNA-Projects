@@ -1,0 +1,200 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. GESTION-EMPLEADOS.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT EMPLEADOS-FILE ASSIGN TO "empleados.dat"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS DYNAMIC
+               RECORD KEY IS EMP-ID
+               FILE STATUS IS EMP-STATUS.
+           SELECT SALARIOS-FILE ASSIGN TO "salarios.dat"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS DYNAMIC
+               RECORD KEY IS SAL-ID
+               FILE STATUS IS SAL-STATUS.
+           SELECT DESBORDAMIENTO-FILE ASSIGN TO "desbordamiento.dat"
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS DESBORD-STATUS.
+
+       DATA DIVISION.
+       FILE SECTION.
+       
+       FD EMPLEADOS-FILE.
+       01 EMPLEADOS-RECORD.
+           05 EMP-ID                   PIC 9(8).
+           05 EMP-APELLIDO             PIC X(20).
+           05 EMP-NOMBRE               PIC X(20).
+           05 EMP-SEXO                 PIC X.
+           05 EMP-TEL-FIJO             PIC X(15).
+           05 EMP-TEL-CELULAR          PIC X(15).
+           05 EMP-CORREO               PIC X(30).
+           05 EMP-DIRECCION            PIC X(50).
+           05 EMP-CONTACTO             PIC X(30).
+
+       FD SALARIOS-FILE.
+       01 SALARIOS-RECORD.
+           05 SAL-ID                   PIC 9(8).
+           05 SAL-FECHA-INGRESO        PIC 9(8).
+           05 SAL-SALARIO              PIC 9(9)V99.
+           05 SAL-MONTO-SSO            PIC 9(9)V99.
+           05 SAL-MONTO-PRESTAMO       PIC 9(9)V99.
+
+       FD DESBORDAMIENTO-FILE.
+       01 DESBORDAMIENTO-RECORD.
+           05 DESB-ID                  PIC 9(8).
+           05 DESB-APELLIDO            PIC X(20).
+           05 DESB-NOMBRE              PIC X(20).
+           05 DESB-SEXO                PIC X.
+           05 DESB-TEL-FIJO            PIC X(15).
+           05 DESB-TEL-CELULAR         PIC X(15).
+           05 DESB-CORREO              PIC X(30).
+           05 DESB-DIRECCION           PIC X(50).
+           05 DESB-CONTACTO            PIC X(30).
+
+       WORKING-STORAGE SECTION.
+       77 EMP-STATUS                  PIC XX.
+       77 SAL-STATUS                  PIC XX.
+       77 DESBORD-STATUS              PIC XX.
+       77 OPCION                      PIC 9.
+       77 CONTINUAR                   PIC X VALUE 'S'.
+
+       PROCEDURE DIVISION.
+       MAIN-LOGIC.
+           OPEN OUTPUT EMPLEADOS-FILE
+           OPEN OUTPUT SALARIOS-FILE
+           OPEN OUTPUT DESBORDAMIENTO-FILE
+
+           PERFORM WITH TEST AFTER UNTIL CONTINUAR = 'N'
+               DISPLAY "1. Registrar información de nuevo empleado"
+               DISPLAY "2. Consultar empleado"
+               DISPLAY "3. Editar empleado"
+               DISPLAY "4. Eliminar empleado"
+               DISPLAY "5. Generar informe mensual"
+               DISPLAY "Seleccione una opción (0 para salir): "
+               ACCEPT OPCION
+
+               EVALUATE OPCION
+                   WHEN 1
+                       PERFORM REGISTRAR-EMPLEADO
+                   WHEN 2
+                       PERFORM CONSULTAR-EMPLEADO
+                   WHEN 3
+                       PERFORM EDITAR-EMPLEADO
+                   WHEN 4
+                       PERFORM ELIMINAR-EMPLEADO
+                   WHEN 5
+                       PERFORM GENERAR-INFORME
+                   WHEN 0
+                       MOVE 'N' TO CONTINUAR
+                   WHEN OTHER
+                       DISPLAY "Opción no válida"
+               END-EVALUATE
+           END-PERFORM.
+
+           CLOSE EMPLEADOS-FILE
+           CLOSE SALARIOS-FILE
+           CLOSE DESBORDAMIENTO-FILE.
+
+           STOP RUN.
+
+       REGISTRAR-EMPLEADO.
+           DISPLAY "Ingrese ID del empleado: "
+           ACCEPT EMP-ID
+           DISPLAY "Ingrese Apellido: "
+           ACCEPT EMP-APELLIDO
+           DISPLAY "Ingrese Nombre: "
+           ACCEPT EMP-NOMBRE
+           DISPLAY "Ingrese Sexo: "
+           ACCEPT EMP-SEXO
+           DISPLAY "Ingrese Teléfono Fijo: "
+           ACCEPT EMP-TEL-FIJO
+           DISPLAY "Ingrese Teléfono Celular: "
+           ACCEPT EMP-TEL-CELULAR
+           DISPLAY "Ingrese Correo: "
+           ACCEPT EMP-CORREO
+           DISPLAY "Ingrese Dirección: "
+           ACCEPT EMP-DIRECCION
+           DISPLAY "Ingrese Contacto: "
+           ACCEPT EMP-CONTACTO
+
+           WRITE EMPLEADOS-RECORD INVALID KEY
+               DISPLAY "Error: No se pudo registrar el empleado"
+           END-WRITE.
+
+           DISPLAY "Empleado registrado exitosamente.".
+
+       CONSULTAR-EMPLEADO.
+           DISPLAY "Ingrese ID del empleado a consultar: "
+           ACCEPT EMP-ID
+
+           READ EMPLEADOS-FILE KEY IS EMP-ID INVALID KEY
+               DISPLAY "Empleado no encontrado"
+           END-READ.
+
+           DISPLAY "Apellido: " EMP-APELLIDO
+           DISPLAY "Nombre: " EMP-NOMBRE
+           DISPLAY "Sexo: " EMP-SEXO
+           DISPLAY "Teléfono Fijo: " EMP-TEL-FIJO
+           DISPLAY "Teléfono Celular: " EMP-TEL-CELULAR
+           DISPLAY "Correo: " EMP-CORREO
+           DISPLAY "Dirección: " EMP-DIRECCION
+           DISPLAY "Contacto: " EMP-CONTACTO.
+
+       EDITAR-EMPLEADO.
+           DISPLAY "Ingrese ID del empleado a editar: "
+           ACCEPT EMP-ID
+
+           READ EMPLEADOS-FILE KEY IS EMP-ID INVALID KEY
+               DISPLAY "Empleado no encontrado"
+           END-READ
+
+           DISPLAY "Ingrese nuevo Apellido: "
+           ACCEPT EMP-APELLIDO
+           DISPLAY "Ingrese nuevo Nombre: "
+           ACCEPT EMP-NOMBRE
+           DISPLAY "Ingrese nuevo Sexo: "
+           ACCEPT EMP-SEXO
+           DISPLAY "Ingrese nuevo Teléfono Fijo: "
+           ACCEPT EMP-TEL-FIJO
+           DISPLAY "Ingrese nuevo Teléfono Celular: "
+           ACCEPT EMP-TEL-CELULAR
+           DISPLAY "Ingrese nuevo Correo: "
+           ACCEPT EMP-CORREO
+           DISPLAY "Ingrese nueva Dirección: "
+           ACCEPT EMP-DIRECCION
+           DISPLAY "Ingrese nuevo Contacto: "
+           ACCEPT EMP-CONTACTO
+
+           REWRITE EMPLEADOS-RECORD
+               DISPLAY "Empleado actualizado exitosamente.".
+
+       ELIMINAR-EMPLEADO.
+           DISPLAY "Ingrese ID del empleado a eliminar: "
+           ACCEPT EMP-ID
+
+           DELETE EMPLEADOS-FILE RECORD INVALID KEY
+               DISPLAY "Empleado no encontrado"
+           END-DELETE.
+
+           DISPLAY "Empleado eliminado exitosamente.".
+
+       GENERAR-INFORME.
+           DISPLAY "Generando informe mensual..."
+           PERFORM WITH TEST AFTER
+               UNTIL EMP-STATUS = "10"
+               READ EMPLEADOS-FILE NEXT
+                   AT END
+                       MOVE "10" TO EMP-STATUS
+                   NOT AT END
+                       DISPLAY "ID: " EMP-ID
+                       DISPLAY "Apellido: " EMP-APELLIDO
+                       DISPLAY "Nombre: " EMP-NOMBRE
+                       DISPLAY "Salario: " SAL-SALARIO
+                       DISPLAY "Monto SSO: " SAL-MONTO-SSO
+                       DISPLAY "Monto Prestamo: " SAL-MONTO-PRESTAMO
+               END-READ
+           END-PERFORM.
+
+           DISPLAY "Informe generado.".

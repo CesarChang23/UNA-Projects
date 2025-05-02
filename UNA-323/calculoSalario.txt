@@ -1,0 +1,54 @@
+Proceso CalculoSalario
+Definir horasTrabajadas, salarioBruto, impuestos, salarioNeto Como Real
+Definir entradaUsuario Como Caracter
+Definir esNumero Como Logico
+Definir i Como Entero
+
+Repetir
+esNumero := Verdadero
+Escribir("Ingrese el número de horas trabajadas: ")
+Leer(entradaUsuario)
+
+i := 1
+Mientras i <= Longitud(entradaUsuario) Hacer
+Si No EsNumero(entradaUsuario[i]) y entradaUsuario[i] <> "." Entonces
+esNumero := Falso
+Romper
+FinSi
+i := i + 1
+FinMientras
+
+Si esNumero Entonces
+horasTrabajadas := ConvertirACaracterReal(entradaUsuario)
+Si horasTrabajadas < 0 Entonces
+esNumero := Falso
+
+Escribir("Error: Ingrese un número válido de horas (no negativo).")
+FinSi
+Sino
+Escribir("Error: Ingrese un número válido de horas.")
+FinSi
+
+Hasta Que esNumero
+
+Si horasTrabajadas <= 35 Entonces
+salarioBruto := horasTrabajadas * 10 // Reemplaza con la tarifa normal adecuada
+Sino
+salarioBruto := 35 * 10 + (horasTrabajadas - 35) * (10 * 1.5) // Reemplaza con la
+tarifa normal adecuada
+FinSi
+
+Si salarioBruto <= 50 Entonces
+impuestos := 0
+Sino
+Si salarioBruto <= 90 Entonces
+impuestos := (salarioBruto - 50) * 0.25
+Sino
+impuestos := 40 * 0.25 + (salarioBruto - 90) * 0.45
+FinSi
+FinSi
+
+salarioNeto := salarioBruto - impuestos
+
+Escribir("El salario neto semanal es: ", Redondear(salarioNeto, 2))
+FinProceso
